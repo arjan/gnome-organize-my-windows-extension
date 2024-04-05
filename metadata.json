@@ -1,9 +1,9 @@
 {
-    "name": "My TypeScript Extension",
-    "description": "An extension made with TypeScript",
-    "uuid": "my-extension@example.com",
-    "url": "https://github.com/example/my-extension",
-    "settings-schema": "org.gnome.shell.extensions.my-extension",
+    "name": "Organize my windows",
+    "description": "Organize windows on workspaces according to a fixed schema",
+    "uuid": "organize-my-windows@github.com",
+    "url": "https://github.com/arjan/gnome-organize-my-windows-extension",
+    "settings-schema": "org.gnome.shell.extensions.organize-my-windows",
     "shell-version": [
         "45"
     ]

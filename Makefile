@@ -1,9 +1,9 @@
 NAME=organize-my-windows
 DOMAIN=github.com
 
-.PHONY: all pack install clean
+.PHONY: all pack install clean $(NAME).zip
 
-all: dist/extension.js
+all: $(NAME).zip
 
 node_modules: package.json
 	npm install
@@ -28,3 +28,10 @@ install: $(NAME).zip
 
 clean:
 	@rm -rf dist node_modules $(NAME).zip
+
+install-symlink: $(NAME).zip
+	rm -rf ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
+	ln -s $(PWD)/dist ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
+
+run-nested:
+	dbus-run-session -- gnome-shell --nested --wayland
