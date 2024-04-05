@@ -1,0 +1,18 @@
+{
+  "name": "organize-my-windows",
+  "version": "1.0.0",
+  "description": "Organize windows on workspaces according to a fixed schema",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arjan/gnome-organize-my-windows-extension.git"
+  },
+  "author": "Álan Crístoffer e Sousa <acristoffers@startmail.com>",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/arjan/gnome-organize-my-windows-extension/issues"
+  },
+  "homepage": "https://github.com/arjan/gnome-organize-my-windows-extension#readme",
+  "sideEffects": false
+}
