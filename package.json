@@ -14,5 +14,8 @@
     "url": "https://github.com/arjan/gnome-organize-my-windows-extension/issues"
   },
   "homepage": "https://github.com/arjan/gnome-organize-my-windows-extension#readme",
-  "sideEffects": false
+  "sideEffects": false,
+  "dependencies": {
+    "typescript": "^5.4.4"
+  }
 }
