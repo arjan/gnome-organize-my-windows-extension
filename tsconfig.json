@@ -9,5 +9,5 @@
     "lib": ["ES2022"]
   },
   "include": ["ambient.d.ts"],
-  "files": ["extension.ts", "prefs.ts"]
+  "files": ["extension.ts", "prefs.ts", "util.ts"]
 }

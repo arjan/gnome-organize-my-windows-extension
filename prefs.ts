@@ -19,32 +19,33 @@ export default class GnomeRectanglePreferences extends ExtensionPreferences {
     });
 
     const shortcutGroup = new Adw.PreferencesGroup({
-      title: _("Shortcut key"),
-      description: _("Configure shortcut key"),
+      title: _("Shortcut keys"),
+      description: _("Configure shortcut keys"),
     });
 
-    const shortcutLabel = new Gtk.ShortcutLabel({
-      disabledText: _("Select a shortcut"),
-      accelerator: this._settings.get_strv("shortcut-key")[0] || "",
+    ///
+
+    const restoreShortcutLabel = new Gtk.ShortcutLabel({
+      accelerator: this._settings.get_strv("restore-shortcut-key")[0] || "",
       valign: Gtk.Align.CENTER,
       halign: Gtk.Align.CENTER,
     });
 
-    this._settings.connect("changed::shortcut-key", () => {
-      shortcutLabel.set_accelerator(
-        this._settings?.get_strv("shortcut-key")[0] || "",
+    this._settings.connect("changed::restore-shortcut-key", () => {
+      restoreShortcutLabel.set_accelerator(
+        this._settings?.get_strv("restore-shortcut-key")[0] || "",
       );
     });
 
-    let rowShortcut = new Adw.ActionRow({
-      title: _("Shortcut Key"),
+    let restoreShortcut = new Adw.ActionRow({
+      title: _("Restore shortcut"),
       subtitle: _("Shortcut to organize the windows"),
     });
 
-    rowShortcut.connect("activated", () => {
+    restoreShortcut.connect("activated", () => {
       const ctl = new Gtk.EventControllerKey();
       const content = new Adw.StatusPage({
-        title: _("New Shortcut"),
+        title: _("New Restore Shortcut"),
         description: _(
           "The shortcut will be accepted only if it is not already in use.",
         ),
@@ -69,7 +70,7 @@ export default class GnomeRectanglePreferences extends ExtensionPreferences {
         if (!isValidBinding$1(mask, keyval) || !isValidAccel$1(mask, keyval)) {
           return Gdk.EVENT_STOP;
         }
-        this._settings?.set_strv("shortcut-key", [
+        this._settings?.set_strv("restore-shortcut-key", [
           Gtk.accelerator_name_with_keycode(null, keyval, keycode, mask) || "",
         ]);
         editor.destroy();
@@ -78,16 +79,85 @@ export default class GnomeRectanglePreferences extends ExtensionPreferences {
       editor.present();
     });
 
-    rowShortcut.add_suffix(shortcutLabel);
-    rowShortcut.activatableWidget = shortcutLabel;
-    shortcutGroup.add(rowShortcut);
-    page.add(shortcutGroup);
+    restoreShortcut.add_suffix(restoreShortcutLabel);
+    restoreShortcut.activatableWidget = restoreShortcutLabel;
 
+    ///
+
+    const saveShortcutLabel = new Gtk.ShortcutLabel({
+      accelerator: this._settings.get_strv("save-shortcut-key")[0] || "",
+      valign: Gtk.Align.CENTER,
+      halign: Gtk.Align.CENTER,
+    });
+
+    this._settings.connect("changed::save-shortcut-key", () => {
+      saveShortcutLabel.set_accelerator(
+        this._settings?.get_strv("save-shortcut-key")[0] || "",
+      );
+    });
+
+    let saveShortcut = new Adw.ActionRow({
+      title: _("Save shortcut"),
+      subtitle: _("Shortcut to save the window layout"),
+    });
+
+    saveShortcut.connect("activated", () => {
+      const ctl = new Gtk.EventControllerKey();
+      const content = new Adw.StatusPage({
+        title: _("New Save Shortcut"),
+        description: _(
+          "The shortcut will be accepted only if it is not already in use.",
+        ),
+        iconName: "preferences-desktop-keyboard-shortcuts-symbolic",
+      });
+      const editor = new Adw.Window({
+        modal: true,
+        hideOnClose: true,
+        widthRequest: 320,
+        heightRequest: 240,
+        resizable: false,
+        content,
+      });
+      editor.add_controller(ctl);
+      ctl.connect("key-pressed", (_, keyval, keycode, state) => {
+        let mask = state & Gtk.accelerator_get_default_mod_mask();
+        mask &= ~Gdk.ModifierType.LOCK_MASK;
+        if (!mask && keyval === Gdk.KEY_Escape) {
+          editor.close();
+          return Gdk.EVENT_STOP;
+        }
+        if (!isValidBinding$1(mask, keyval) || !isValidAccel$1(mask, keyval)) {
+          return Gdk.EVENT_STOP;
+        }
+        this._settings?.set_strv("save-shortcut-key", [
+          Gtk.accelerator_name_with_keycode(null, keyval, keycode, mask) || "",
+        ]);
+        editor.destroy();
+        return Gdk.EVENT_STOP;
+      });
+      editor.present();
+    });
+
+    saveShortcut.add_suffix(saveShortcutLabel);
+    saveShortcut.activatableWidget = saveShortcutLabel;
+
+    ///
+
+    shortcutGroup.add(restoreShortcut);
+    shortcutGroup.add(saveShortcut);
+
+    page.add(shortcutGroup);
     window.add(page);
 
     this._settings!.bind(
-      "shortcut-key",
-      shortcutLabel,
+      "restore-shortcut-key",
+      restoreShortcutLabel,
+      "active",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+    this._settings!.bind(
+      "save-shortcut-key",
+      saveShortcutLabel,
       "active",
       Gio.SettingsBindFlags.DEFAULT,
     );

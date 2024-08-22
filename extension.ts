@@ -5,9 +5,12 @@ import Shell from "gi://Shell";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 
 import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
+import { showToastMessage } from "./util.js";
 
 type WindowInfo = {
   monitorIndex: number;
+  workspaceIndex: number;
+  maximized: number;
   title: string;
   wmClass: string | null;
   wmClassInstance: string | null;
@@ -20,25 +23,72 @@ type WindowInfo = {
 export default class MyExtension extends Extension {
   gsettings?: Gio.Settings;
 
+  windows: WindowInfo[] = [];
+
   enable() {
     this.gsettings = this.getSettings();
 
     global.windowManager.connect("switch-workspace", () => console.log("a"));
 
     Main.wm.addKeybinding(
-      "shortcut-key",
+      "restore-shortcut-key",
       this.gsettings,
       Meta.KeyBindingFlags.NONE,
       Shell.ActionMode.NORMAL,
-      this._organize.bind(this),
+      this._restore_layout.bind(this),
     );
+
+    Main.wm.addKeybinding(
+      "save-shortcut-key",
+      this.gsettings,
+      Meta.KeyBindingFlags.NONE,
+      Shell.ActionMode.NORMAL,
+      this._save_layout.bind(this),
+    );
+
+    this._gather();
   }
 
   disable() {
     this.gsettings = undefined;
+
+    Main.wm.removeKeybinding("save-shortcut-key");
   }
 
-  _organize() {
+  _restore_layout() {
+    showToastMessage("Restoring...");
+    console.log(this.windows);
+
+    const n = global.workspaceManager.get_n_workspaces();
+    for (let i = 0; i < n; i++) {
+      const ws = global.workspaceManager.get_workspace_by_index(i);
+      if (!ws) continue;
+
+      for (const win of ws.list_windows()) {
+        const info = findWindowMatch(this.windows, win);
+        if (info) {
+          console.log("match:", JSON.stringify(info));
+
+          if (win.get_workspace().index() !== info.workspaceIndex) {
+            const ws = global.workspaceManager.get_workspace_by_index(
+              info.workspaceIndex,
+            );
+            if (ws) {
+              win.change_workspace(ws);
+            }
+          }
+
+          if (win.get_maximized() != info.maximized) {
+            win.maximize(info.maximized);
+          }
+
+          win.move_resize_frame(false, info.x, info.y, info.width, info.height);
+        }
+      }
+    }
+  }
+
+  _gather() {
     const info: WindowInfo[] = [];
 
     const n = global.workspaceManager.get_n_workspaces();
@@ -53,7 +103,9 @@ export default class MyExtension extends Extension {
 
         info.push({
           monitorIndex,
+          workspaceIndex: i,
           title: win.get_title(),
+          maximized: win.get_maximized(),
           wmClass: win.get_wm_class(),
           wmClassInstance: win.get_wm_class_instance(),
           x,
@@ -63,6 +115,11 @@ export default class MyExtension extends Extension {
         });
       }
     }
+    this.windows = info;
+  }
+
+  _save_layout() {
+    this._gather();
 
     let file = Gio.File.new_for_path(this._filepath());
     let outputStream = file.replace(
@@ -73,13 +130,15 @@ export default class MyExtension extends Extension {
     );
 
     // Convert the content string to bytes and write it to the file
-    const content = JSON.stringify(info, null, 2);
+    const content = JSON.stringify(this.windows, null, 2);
     outputStream.write_all(new TextEncoder().encode(content), null);
 
     // Close the stream
     outputStream.close(null);
 
     console.log("written!", this._filepath());
+
+    showToastMessage("Window configuration saved!");
   }
 
   _filepath() {
@@ -88,4 +147,19 @@ export default class MyExtension extends Extension {
       "organize-my-windows.json",
     ]);
   }
+}
+
+function findWindowMatch(
+  windows: WindowInfo[],
+  win: Meta.Window,
+): WindowInfo | null {
+  for (const info of windows) {
+    if (info.wmClassInstance === win.get_wm_class_instance()) {
+      return info;
+    }
+    if (info.wmClass === win.get_wm_class()) {
+      return info;
+    }
+  }
+  return null;
 }
