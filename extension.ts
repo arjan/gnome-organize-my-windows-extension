@@ -57,7 +57,6 @@ export default class MyExtension extends Extension {
 
   _restore_layout() {
     showToastMessage("Restoring...");
-    console.log(this.windows);
 
     const n = global.workspaceManager.get_n_workspaces();
     for (let i = 0; i < n; i++) {
@@ -154,6 +153,9 @@ function findWindowMatch(
   win: Meta.Window,
 ): WindowInfo | null {
   for (const info of windows) {
+    if (info.title === win.get_title()) {
+      return info;
+    }
     if (info.wmClassInstance === win.get_wm_class_instance()) {
       return info;
     }
