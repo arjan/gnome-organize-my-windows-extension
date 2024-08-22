@@ -1,10 +1,8 @@
 {
-    "name": "Organize my windows",
-    "description": "Organize windows on workspaces according to a fixed schema",
-    "uuid": "organize-my-windows@github.com",
-    "url": "https://github.com/arjan/gnome-organize-my-windows-extension",
-    "settings-schema": "org.gnome.shell.extensions.organize-my-windows",
-    "shell-version": [
-        "45"
-    ]
+  "name": "Organize my windows",
+  "description": "Organize windows on workspaces according to a fixed schema",
+  "uuid": "organize-my-windows@github.com",
+  "url": "https://github.com/arjan/gnome-organize-my-windows-extension",
+  "settings-schema": "org.gnome.shell.extensions.organize-my-windows",
+  "shell-version": ["45", "46"]
 }

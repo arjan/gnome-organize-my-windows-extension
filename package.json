@@ -16,6 +16,11 @@
   "homepage": "https://github.com/arjan/gnome-organize-my-windows-extension#readme",
   "sideEffects": false,
   "dependencies": {
+    "@girs/gjs": "^3.3.0",
+    "@girs/gnome-shell": "^46.0.0-beta6",
     "typescript": "^5.4.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
   }
 }
