@@ -33,5 +33,5 @@ install-symlink: $(NAME).zip
 	rm -rf ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
 	ln -s $(PWD)/dist ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
 
-run-nested:
+run-nested: install
 	dbus-run-session -- gnome-shell --nested --wayland

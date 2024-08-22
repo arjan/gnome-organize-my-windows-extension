@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.organize-my-windows" path="/org/gnome/shell/extensions/organize-my-windows/">
-    <key name="padding-inner" type="i">
-      <default>8</default>
-      <summary>Inner padding</summary>
-      <description>Padding between windows</description>
-    </key>
-    <key name="animate" type="b">
-      <default>true</default>
-      <summary>Animation</summary>
-      <description>Whether to animate window movement/resizing</description>
+    <key name="shortcut-key" type="as">
+      <default><![CDATA[['<Super>semicolon']]]></default>
+      <summary>Keybinding switch to organize the windows</summary>
+      <description>
+        The keybinding used to switch to organize the windows
+      </description>
     </key>
   </schema>
 </schemalist>
